@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block header %}
+
+<h2>IKBFU Enrollment Statistics</h2>
+
+<h3>Log In</h3>
+{% endblock header %}
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Log In</button>
+</form>
+<p>Forgot login or password? Please, contact the IKBFU technical support department.</p>
+{% endblock content %}

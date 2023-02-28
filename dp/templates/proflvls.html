@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}IKBFU Enrollment{% endblock title %}
+{% block header %}<h2>Статистика зачислений по уровням образования (2020 - 2022 гг.)</h2>{% endblock header %}
+
+{% block content %}
+
+{{ proflvls|safe }}
+{% endblock content %}
