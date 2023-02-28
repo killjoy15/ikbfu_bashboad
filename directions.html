@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block header %}<h2>Статистика зачислений по направлениям (2020-2022 гг.)</h2>{% endblock header %}
+
+{% block content %}
+
+{{ bach_dir|safe }}
+{{ mas_dir|safe }}
+{{ phd_dir|safe }}
+{{ spec_dir|safe }}
+{{ voc_dir|safe }}
+{{ res_dir|safe }}
+
+{% endblock content %}
