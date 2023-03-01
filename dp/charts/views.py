@@ -262,7 +262,7 @@ def registrations(request):
     df03 = df[df['АдресРегистрации'].str.contains('Калининградская')]
     df03 = df03.groupby(['ДатаНачалаОбучения'], as_index=True).count() 
     df03 = df03.filter(like='2021', axis=0)
-    df03 = df03.reset_index(level=['ДатаНачалаОбучения'])
+    df03 = df03.reset_index(level=['ДатаНачалаОбучения']) 
     df03 = df03.assign(ГодНачалаОбучения = '2021')
     df03 = df03.assign(Прописка = 'К.О.')
     df03 = df03.groupby(["ГодНачалаОбучения", 'Прописка'], as_index=False).sum()
