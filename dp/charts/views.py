@@ -109,40 +109,46 @@ def directions(request):
     return render(request, 'directions.html', context)
 
 def foreigns(request):
-    df14 = df.loc[df['Гражданство'] != 'РОССИЯ']
-    df14 = df14.loc[df14['Гражданство'] != 'Российская Федерация']
+    def get_foreign_stats(indx, col, ori, ang, asc, hgt=None):
+        df14 = df.loc[df['Гражданство'] != 'РОССИЯ']
+        df14 = df14.loc[df14['Гражданство'] != 'Российская Федерация']
+
+        df15 = df14.groupby(['ДатаНачалаОбучения', indx], as_index=True).count()
+        df15 = df15.filter(like='.2020', axis=0) # 1 - по столбцам, 0 - по строкам.
+        df15 = df15.reset_index(level=['ДатаНачалаОбучения', indx])
+        df15 = df15.assign(ГодНачалаОбучения = '2020')
+        df15 = df15.groupby([indx, "ГодНачалаОбучения"], as_index=False).sum()
+
+        df16 = df14.groupby(['ДатаНачалаОбучения', indx], as_index=True).count()
+        df16 = df16.filter(like='.2021', axis=0) # 1 - по столбцам, 0 - по строкам.
+        df16 = df16.reset_index(level=['ДатаНачалаОбучения', indx])
+        df16 = df16.assign(ГодНачалаОбучения = '2021')
+        df16 = df16.groupby([indx, "ГодНачалаОбучения"], as_index=False).sum()
+
+        df17 = df14.groupby(['ДатаНачалаОбучения', indx], as_index=True).count()
+        df17 = df17.filter(like='.2022', axis=0) # 1 - по столбцам, 0 - по строкам.
+        df17 = df17.reset_index(level=['ДатаНачалаОбучения',indx])
+        df17 = df17.assign(ГодНачалаОбучения = '2022')
+        df17 = df17.groupby([indx, "ГодНачалаОбучения"], as_index=False).sum()
+
+        df18 = pd.concat([df15, df16, df17], ignore_index=False)
+        df18 = df18.sort_values([asc, 'ГодНачалаОбучения'], ascending=True)
 
 
-    df15 = df14.groupby(['ДатаНачалаОбучения', 'Гражданство'], as_index=True).count()
-    df15 = df15.filter(like='.2020', axis=0) # 1 - по столбцам, 0 - по строкам.
-    df15 = df15.reset_index(level=['ДатаНачалаОбучения','Гражданство'])
-    df15 = df15.assign(ГодНачалаОбучения = '2020')
-    df15 = df15.groupby(['Гражданство', "ГодНачалаОбучения"], as_index=False).sum()
+        fig4 = px.bar(df18, x=indx, y=col, 
+                        color='ГодНачалаОбучения', 
+                        text_auto=True, 
+                        orientation=ori,
+                        height=hgt,
+                        # labels={'GUID':'Зачислено студентов'},
+                        color_discrete_sequence=px.colors.qualitative.Pastel)
+        fig4.update_layout(xaxis_tickangle=ang)
+        return fig4
+    # foreigns1 = fig4.to_html()
+    foreigns1 = get_foreign_stats('УровеньПодготовки', 'GUID', 'v',0, 'УровеньПодготовки',600).to_html()                  
+    foreigns2 = get_foreign_stats('Гражданство', 'GUID', 'v', 45,'Гражданство', 800).to_html()     
 
-    df16 = df14.groupby(['ДатаНачалаОбучения', 'Гражданство'], as_index=True).count()
-    df16 = df16.filter(like='.2021', axis=0) # 1 - по столбцам, 0 - по строкам.
-    df16 = df16.reset_index(level=['ДатаНачалаОбучения','Гражданство'])
-    df16 = df16.assign(ГодНачалаОбучения = '2021')
-    df16 = df16.groupby(['Гражданство', "ГодНачалаОбучения"], as_index=False).sum()
-
-    df17 = df14.groupby(['ДатаНачалаОбучения', 'Гражданство'], as_index=True).count()
-    df17 = df17.filter(like='.2022', axis=0) # 1 - по столбцам, 0 - по строкам.
-    df17 = df17.reset_index(level=['ДатаНачалаОбучения','Гражданство'])
-    df17 = df17.assign(ГодНачалаОбучения = '2022')
-    df17 = df17.groupby(['Гражданство', "ГодНачалаОбучения"], as_index=False).sum()
-
-    df18 = pd.concat([df15, df16, df17], ignore_index=False)
-    df18 = df18.sort_values(['Гражданство'], ascending=False)
-
-
-    fig4 = px.bar(df18, x='GUID', y='Гражданство', 
-                    color='ГодНачалаОбучения', 
-                    text_auto=True, height=1500, 
-                    labels={'GUID':'Зачислено студентов'},
-                    color_discrete_sequence=px.colors.qualitative.Pastel)
-    # fig4.update_layout(xaxis_tickangle=45)
-    foreigns = fig4.to_html()                  
-    context = {'foreigns': foreigns}
+    context = {'foreigns1': foreigns1,  'foreigns2': foreigns2}
     return render(request, 'foreigns.html', context)
 
 def forms(request):
